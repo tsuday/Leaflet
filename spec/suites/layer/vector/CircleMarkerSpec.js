@@ -50,4 +50,50 @@
 			});
 		});
 	});
+
+	describe("#_containsPoint", function () {
+		var map;
+		beforeEach(function () {
+			map = L.map(document.createElement('div'));
+			map.setView([0, 0], 1);
+		});
+
+		it("should return true for a point whose distance from center < radius + click tolerance", function () {
+			// correspond to [10, 10] in pixel coordinate
+			var latlng = L.latLng(-7, 7);
+			var marker = L.circleMarker(latlng, {radius: 20}).addTo(map);
+
+			// distance between [10, 10] and [20, 20] < radius 20 + click tolerance, where tolerance is 1.5
+			//var p = L.point(20, 20);
+			var p = L.point(10, 31.4);
+			expect(marker._clickTolerance()).to.be(1.5);
+
+			expect(marker._containsPoint(p)).to.be(true);
+		});
+
+		it("should return true for a point whose distance from center == radius + click tolerance", function () {
+			// correspond to [10, 10] in pixel coordinate
+			var latlng = L.latLng(-7, 7);
+			var marker = L.circleMarker(latlng, {radius: 20}).addTo(map);
+
+			// distance between [10, 10] and [10, 31.5] == radius 20 + click tolerance, where tolerance is 1.5
+			var p = L.point(10, 31.5);
+			expect(marker._clickTolerance()).to.be(1.5);
+
+			expect(marker._containsPoint(p)).to.be(true);
+		});
+
+		it("should return false for a point whose distance from center > radius + click tolerance", function () {
+			// correspond to [10, 10] in pixel coordinate
+			var latlng = L.latLng(-7, 7);
+			var marker = L.circleMarker(latlng, {radius: 20}).addTo(map);
+
+			// distance between [10, 10] and [30, 30] > radius 20 + click tolerance, where tolerance is 1.5
+			var p = L.point(30, 30);
+			expect(marker._clickTolerance()).to.be(1.5);
+
+			expect(marker._containsPoint(p)).to.be(false);
+		});
+
+	});
 });
